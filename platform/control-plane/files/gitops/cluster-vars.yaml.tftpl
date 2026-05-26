@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cluster-vars
+  namespace: "${kubernetes_namespace}"
+data:
+  # Keys to be used by Pods
+  cloud_provider: "${cluster_cloud_provider}"
+  cloud_region: "${cluster_cloud_region}"
+  resource_group: "${resource_group_name}"
+  platform_name: "${cluster_name}"
+  platform_dns_domain_name: "${cluster_dns_domain_name}"
+  platform_primary_container_registry: "${cluster_primary_container_registry}"
+  platform_container_registries: "${cluster_container_registries}"
+  gitops_repository_name: "${gitops_repository_name}"
+  gitops_repository_url: "${gitops_repository_url}"
+  oidc_issuer: "${oidc_issuer}"
+  oidc_metadata: "${oidc_metadata}"
+  monitor_workspace_query_endpoint: "${monitor_workspace_query_endpoint}"
+  keda_user_assigned_identity_client_id: "${keda_user_assigned_identity_client_id}"
+
+  instance-values.yaml: |
+    clusterVars:
+      cloud:
+        provider: "${cluster_cloud_provider}"
+        region: "${cluster_cloud_region}"
+        keda_user_assigned_identity_client_id: "${keda_user_assigned_identity_client_id}"
+      aks:
+        oidc_audience: "${aks_oidc_audience}"
+        oidc_issuer_url: "${aks_oidc_issuer_url}"
+      platform:
+        name: "${cluster_name}"
+        dnsDomainName: "${cluster_dns_domain_name}"
+        primaryContainerRegistry: "${cluster_primary_container_registry}"
+        containerRegistries: "${cluster_container_registries}"
+        oidcIssuer: "${oidc_issuer}"
+        oidcMetadata: "${oidc_metadata}"
+      gitops:
+        gitRepositoryName: "${gitops_repository_name}"
+        gitRepositoryUrl: "${gitops_repository_url}"
+
+
+

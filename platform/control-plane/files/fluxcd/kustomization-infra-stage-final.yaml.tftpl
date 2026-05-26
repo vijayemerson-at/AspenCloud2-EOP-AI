@@ -1,0 +1,19 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-stage-final
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: infra-stage2
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  serviceAccountName: kustomize-controller
+  path: ./${prefix}/infrastructure/stage-final
+  force: true
+  prune: true
+  wait: true
+  timeout: 20m

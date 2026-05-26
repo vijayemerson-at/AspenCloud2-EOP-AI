@@ -1,0 +1,17 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: ${name}
+  namespace: ${namespace}
+  labels:
+    app.kubernetes.io/managed-by: Terraform
+    app.kubernetes.io/created-by: Terraform
+spec:
+  url: ${url}
+  interval: ${interval}
+  type: ${type}
+%{ if secret_name != "" }
+  secretRef:
+    name: ${secret_name}
+%{ endif }

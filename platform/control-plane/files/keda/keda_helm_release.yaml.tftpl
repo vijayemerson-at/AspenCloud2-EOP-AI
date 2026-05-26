@@ -1,0 +1,49 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: keda
+  namespace: ${namespace}
+spec:
+  chart:
+    spec:
+      chart: library/keda
+      version: ${keda_chart_version}
+      sourceRef:
+        kind: HelmRepository
+        name: platform
+        namespace: flux-system
+  interval: 5m
+  releaseName: keda
+  targetNamespace: ${namespace}
+  values:
+    image:
+      keda:
+        registry: ${image_registry}/library
+        repository: kedacore/keda
+        tag: ${keda_chart_version}
+      metricsApiServer:
+        registry: ${image_registry}/library
+        repository: kedacore/keda-metrics-apiserver
+        tag: ${keda_chart_version}
+      webhooks:
+        registry: ${image_registry}/library
+        repository: kedacore/keda-admission-webhooks
+        tag: ${keda_chart_version}
+
+    operator:
+      nodeSelector:
+        "node.aspencloud.ai/nodepool": "npuser01"
+
+    metricsServer:
+      nodeSelector:
+        "node.aspencloud.ai/nodepool": "npuser01"
+
+    webhooks:
+      nodeSelector:
+        "node.aspencloud.ai/nodepool": "npuser01"
+
+    podIdentity:
+      azureWorkload:
+        enabled: true
+        clientId: ${clientId}
+        tenantId: ${tenantId}

@@ -1,0 +1,25 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: stakater
+  namespace: ${namespace}
+spec:
+  chart:
+    spec:
+      chart: library/reloader
+      version: ${stakater_chart_version}
+      sourceRef:
+        kind: HelmRepository
+        name: platform
+        namespace: flux-system
+  interval: 5m
+  releaseName: stakater
+  targetNamespace: ${namespace}
+  values:
+    reloader:
+      deployment:
+        nodeSelector:
+          "node.aspencloud.ai/nodepool": "npuser01"
+    global:
+      imageRegistry: ${image_registry}/library
+

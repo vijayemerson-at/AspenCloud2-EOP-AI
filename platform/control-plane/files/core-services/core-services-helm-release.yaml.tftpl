@@ -1,0 +1,42 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ${core_service_release_name}
+  namespace: aspencloud
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    aspencloud.ai/managed: "true"
+  annotations:
+    aspencloud.ai/application-id: "${core_services_application_id}"
+    aspencloud.ai/job-id: "0"
+    aspencloud.ai/lifecycle-id: "0"
+    aspencloud.ai/operation-id: "0"
+    aspencloud.ai/software-id: "${core_services_software_id}"
+    aspencloud.ai/software-name: System Services
+    aspencloud.ai/version-id: "${core_services_version_id}"
+    meta.helm.sh/release-name: ${core_service_release_name}
+    meta.helm.sh/release-namespace: aspencloud
+spec:
+  chart:
+    spec:
+      chart: aspencloud/core-services
+      version: ${core_services_version}
+      sourceRef:
+        kind: HelmRepository
+        name: ${core_services_helm_repository}
+        namespace: flux-system
+  interval: "5m"
+  timeout: "30m"
+  releaseName: ${core_service_release_name}
+  values:
+    licensing:
+      slmServerAddress: "${software_license_manager_server_url}"
+      slmServerBuckets: "${software_license_manager_buckets}"
+    secretStore:
+      identityClientId: ${secret_store_client_id}
+      name: ${secret_store_name}
+      tenantId: ${secret_store_tenant_id}
+  valuesFrom:
+    - kind: ConfigMap
+      name: cluster-vars
+      valuesKey: instance-values.yaml

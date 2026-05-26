@@ -1,0 +1,3 @@
+storage_account_name = ""   # Name of the Storage Account where to store the Terraform state
+resource_group_name  = ""   # Resource Group where the Storage Account is located
+container_name       = ""   # Name of the container where to store the Terraform state

@@ -1,0 +1,47 @@
+---
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: sync-cluster-vars
+  annotations:
+    policies.kyverno.io/title: Sync ConfigMap cluster-vars
+    policies.kyverno.io/category: ConfigMap
+    policies.kyverno.io/subject: ConfigMap
+    kyverno.io/kyverno-version: 1.13.4
+    kyverno.io/kubernetes-version: "1.30-1.31"
+    policies.kyverno.io/description: >-
+      ConfigMap with cluster-information need to exist in multiple
+      Namespaces so Pods and HelmReleases there have access. Manually duplicating that
+      ConfigMap is time consuming and error prone. This policy will copy a ConfigMap called
+      `cluster-vars` which exists in the `kube-system` Namespace to
+      new Namespaces when they are created. It will also push updates to
+      the copied ConfigMap should the source ConfigMap be changed.
+spec:
+  rules:
+  - name: sync-cluster-vars
+    match:
+      any:
+      - resources:
+          kinds:
+          - Namespace
+    exclude:
+      any:
+      - resources:
+          namespaces:
+          - default
+          - kube-node-lease
+          - kube-public
+          - kube-system
+          - calico-system
+          - gatekeeper-system
+          - kyverno
+    generate:
+      apiVersion: v1
+      kind: ConfigMap
+      name: cluster-vars
+      namespace: "{{request.object.metadata.name}}"
+      synchronize: true
+      generateExisting: true
+      clone:
+        namespace: kyverno
+        name: cluster-vars

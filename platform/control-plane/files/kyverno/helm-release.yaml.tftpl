@@ -1,0 +1,96 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: kyverno
+  namespace: kyverno
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: library/kyverno
+      version: ${kyverno_chart_version}
+      sourceRef:
+        kind: HelmRepository
+        name: platform
+        namespace: flux-system
+      interval: 1m
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+  test:
+    enable: true
+  values:
+    global:
+      nodeSelector:
+        "node.aspencloud.ai/nodepool": "npuser01"
+      image:
+        registry: ${image_registry}/library
+      imagePullSecrets:
+      - name: ${image_pull_secret}
+    test:
+      image:
+        repository: ${image_registry}/library/readiness-checker
+        tag: "v0.1.0"
+      imagePullSecrets:
+      - name: ${image_pull_secret}
+    config:
+      webhookAnnotations:
+        "admissions.enforcer/disabled": "true"
+    admissionController:
+      nodeSelector:
+        "node.aspencloud.ai/nodepool": "npuser01"
+      replicas: 3
+      rbac:
+        clusterRole:
+          extraResources:
+            - apiGroups:
+                - ''
+              resources:
+                - secrets
+              verbs:
+                - get
+                - list
+      container:
+        resources:
+          # -- Pod resource limits
+          limits:
+            memory: 1024Mi
+          # -- Pod resource requests
+          requests:
+            cpu: 100m
+            memory: 512Mi
+    backgroundController:
+      nodeSelector:
+        "node.aspencloud.ai/nodepool": "npuser01"    
+      replicas: 2
+      rbac:
+        clusterRole:
+          extraResources:
+            - apiGroups:
+                - ''
+              resources:
+                - secrets
+              verbs:
+                - get
+                - create
+                - update
+                - delete
+    cleanupController:
+      nodeSelector:
+        "node.aspencloud.ai/nodepool": "npuser01"    
+      replicas: 2
+    reportsController:
+      nodeSelector:
+        "node.aspencloud.ai/nodepool": "npuser01"    
+      replicas: 2
+    webhooksCleanup:
+      nodeSelector:
+        "node.aspencloud.ai/nodepool": "npuser01"    
+      image:
+        repository: kubectl
+    features:
+      backgroundScan:
+        enabled: true
+        backgroundScanWorkers: 2
+        backgroundScanInterval: 10m
+        skipResourceFilters: true

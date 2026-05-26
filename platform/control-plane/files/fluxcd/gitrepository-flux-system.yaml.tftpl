@@ -1,0 +1,17 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: flux-system
+  namespace: flux-system
+  labels:
+    app.kubernetes.io/managed-by: Terraform
+    app.kubernetes.io/created-by: Terraform
+spec:
+  interval: ${interval}
+  ref:
+    branch: ${branch}
+  secretRef:
+    name: ${secret}
+  timeout: 20s
+  url: ${url}

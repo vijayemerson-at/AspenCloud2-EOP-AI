@@ -1,0 +1,26 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: infra-stage0
+  namespace: flux-system
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  serviceAccountName: kustomize-controller
+  path: ./${prefix}/infrastructure/stage0
+  force: true
+  prune: true
+  wait: true
+  timeout: 20m
+  healthChecks:
+    - apiVersion: v1
+      kind: Service
+      name: kyverno-svc
+      namespace: kyverno
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: crossplane
+      namespace: crossplane-system
