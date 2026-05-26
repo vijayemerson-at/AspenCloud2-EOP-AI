@@ -1,22 +1,13 @@
-# AspenCloud2-EOP-AI
-Seed Project to learn from David's team
-
 ```mermaid
 flowchart TD
 
-%% =========================
-%% 1. LOCAL SETUP
-%% =========================
-A[Local Machine<br/>Azure CLI + Terraform + Kubelogin]
-   --> B[az login / Select Subscription]
+A[Local Machine Azure CLI Terraform Kubelogin]
+  --> B[az login and select subscription]
 
-B --> C[Service Principal<br/>(aks_aad_sp_client_id + secret)]
-C --> D[Azure Subscription<br/>Roles + Providers]
+B --> C[Service Principal aks aad sp client id and secret]
+C --> D[Azure Subscription roles and providers]
 
-%% =========================
-%% 2. TERRAFORM DEPLOYMENT
-%% =========================
-D --> E[Terraform Init + Apply]
+D --> E[Terraform init and apply]
 
 E --> F[Infrastructure Created]
 
@@ -26,14 +17,11 @@ F --> F3[Key Vault]
 F --> F4[Monitoring]
 F --> F5[Application Gateway]
 
-%% =========================
-%% 3. IDENTITY SETUP
-%% =========================
-G[Entra ID] 
+G[Entra ID]
 
-G --> G1[App Registration<br/>(oidc_idp_client_id)]
-G --> G2[Client Secret<br/>(oidc_idp_client_secret)]
-G --> G3[API Permission<br/>User.Read]
+G --> G1[App Registration oidc id]
+G --> G2[Client Secret oidc secret]
+G --> G3[API Permission User Read]
 G --> G4[Groups Claim Enabled]
 
 G --> G5[Entra Groups]
@@ -41,35 +29,27 @@ G5 --> G51[Cluster Admins]
 G5 --> G52[KeyVault Admins]
 G5 --> G53[Secret Readers]
 
-%% =========================
-%% 4. INTEGRATION
-%% =========================
-F1 --> H[AKS ↔ Entra ID Integration (OIDC)]
+F1 --> H[AKS Entra ID OIDC Integration]
 
-%% =========================
-%% 5. RUNTIME FLOW
-%% =========================
-I[User Login (SSO)] --> J[Entra ID Authenticates]
+I[User Login SSO] --> J[Entra Authentication]
 
-J --> K[JWT Token Issued]
+J --> K[JWT Token]
 
-K --> K1[User Info (User.Read)]
-K --> K2[Group IDs (Groups Claim)]
+K --> K1[User Info]
+K --> K2[Group IDs]
 
-K --> L[AKS Receives Token]
+K --> L[AKS receives token]
 
 L --> M[RBAC Mapping]
 
-M --> M1[Cluster Admins → Full Access]
-M --> M2[KV Admins → Secret Management]
-M --> M3[Readers → Read-only Access]
+M --> M1[Cluster Admins Full Access]
+M --> M2[KV Admins Secret Access]
+M --> M3[Readers Read Only]
 
-M --> N[Platform Access ✅]
+M --> N[Platform Access]
 
-%% =========================
-%% 6. GITOPS
-%% =========================
-O[GitHub Repo (GitOps)]
+O[GitHub GitOps]
+
 O --> P[Cluster Sync Loop]
 P --> F1
 ```
