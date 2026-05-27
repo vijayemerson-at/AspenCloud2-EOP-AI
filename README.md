@@ -53,6 +53,8 @@ O[GitHub GitOps]
 O --> P[Cluster Sync Loop]
 P --> F1
 ```
+
+```mermaid
 flowchart TD
 
 %% Step 1: Define Groups
@@ -74,3 +76,4 @@ Token -->|Access| KV["Key Vault"]
 %% Authorization
 AKS -->|Check group IDs| Decision1[Allow / Deny]
 KV -->|Check group IDs| Decision2[Allow / Deny]
+```
