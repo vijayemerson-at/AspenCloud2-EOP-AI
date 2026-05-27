@@ -53,3 +53,24 @@ O[GitHub GitOps]
 O --> P[Cluster Sync Loop]
 P --> F1
 ```
+flowchart TD
+
+%% Step 1: Define Groups
+User[User] -->|Assigned to| Groups["Entra ID Groups"]
+subgraph Entra["Microsoft Entra ID"]
+    AppReg["App Registration (SSO)"]
+    Config["Token Config: Groups Claim Enabled"]
+end
+
+%% Token creation
+Groups -->|Group IDs available| Config
+AppReg --> Config
+Config -->|Generate Token| Token["Token (contains group IDs)"]
+
+%% Step 3: Usage
+Token -->|Access| AKS["AKS Cluster"]
+Token -->|Access| KV["Key Vault"]
+
+%% Authorization
+AKS -->|Check group IDs| Decision1[Allow / Deny]
+KV -->|Check group IDs| Decision2[Allow / Deny]
